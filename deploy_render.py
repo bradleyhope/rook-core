@@ -48,14 +48,16 @@ def create_service(owner_id):
         "type": "web_service",
         "name": "rook-chat",
         "ownerId": owner_id,
-        "repo": "https://github.com/YOUR_USERNAME/rook-core",  # Need to update this
+        "repo": "https://github.com/bradleyhope/rook-core",
         "autoDeploy": "yes",
         "serviceDetails": {
             "env": "python",
             "plan": "starter",  # $7/month minimum for API
             "region": "oregon",
-            "buildCommand": "pip install --upgrade pip && pip install -r requirements.txt",
-            "startCommand": "cd api && uvicorn chat_server:app --host 0.0.0.0 --port $PORT",
+            "envSpecificDetails": {
+                "buildCommand": "pip install --upgrade pip && pip install -r requirements.txt",
+                "startCommand": "cd api && uvicorn chat_server:app --host 0.0.0.0 --port $PORT"
+            },
             "envVars": [
                 {"key": "PYTHON_VERSION", "value": "3.11.0"},
                 {"key": "OPENAI_API_KEY", "value": ""},  # Set via dashboard
@@ -95,16 +97,18 @@ def main():
     owner_id = get_owner_id()
     
     # Step 2: Create service
-    print("\n⚠️  IMPORTANT: Render API requires a GitHub repository")
-    print("   You need to:")
-    print("   1. Push ROOK code to GitHub")
-    print("   2. Update the 'repo' URL in this script")
-    print("   3. Run this script again")
-    print("\n   OR deploy manually via Render Dashboard")
-    print("   See RENDER_DEPLOYMENT.md for instructions")
+    service_id = create_service(owner_id)
     
-    # Uncomment when GitHub repo is ready:
-    # service_id = create_service(owner_id)
+    if service_id:
+        print("\n✅ Deployment initiated!")
+        print("   Render is building and deploying ROOK...")
+        print("   This may take 5-10 minutes.")
+        print("\n📝 Next steps:")
+        print("   1. Go to https://dashboard.render.com")
+        print("   2. Add OPENAI_API_KEY to environment variables")
+        print("   3. Wait for deployment to complete")
+    else:
+        print("\n❌ Deployment failed. See error above.")
     
     print("\n" + "=" * 60)
     print("Workspace ID for manual deployment:", owner_id)
