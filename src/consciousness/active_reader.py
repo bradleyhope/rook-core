@@ -21,8 +21,9 @@ class ActiveReader:
     - Archives
     """
     
-    def __init__(self, openai_api_key: Optional[str] = None):
+    def __init__(self, openai_api_key: Optional[str] = None, newsapi_key: Optional[str] = None):
         self.openai_client = OpenAI(api_key=openai_api_key or os.getenv('OPENAI_API_KEY'))
+        self.newsapi_key = newsapi_key or os.getenv('NEWSAPI_KEY')
         self.reading_history = []
         self.current_reading = None
         self.daily_reading_count = 0
