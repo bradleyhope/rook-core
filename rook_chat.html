@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROOK Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'IBM Plex Mono', 'Courier New', monospace;
+            background: #0a0e14;
+            color: #00ff41;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .terminal-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: #0a0e14;
+        }
+        
+        .terminal-header {
+            padding: 12px 20px;
+            background: #0d1117;
+            border-bottom: 1px solid #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .terminal-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .btn-close { background: #ff5f56; }
+        .btn-minimize { background: #ffbd2e; }
+        .btn-maximize { background: #27c93f; }
+        
+        .terminal-title {
+            color: #8b949e;
+            font-size: 13px;
+            margin-left: 8px;
+        }
+        
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #0a0e14;
+        }
+        
+        .messages::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .messages::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+        
+        .messages::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 4px;
+        }
+        
+        .message {
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+        
+        .message-prefix {
+            color: #58a6ff;
+            font-weight: 600;
+        }
+        
+        .message-user .message-prefix {
+            color: #f778ba;
+        }
+        
+        .message-rook .message-prefix {
+            color: #00ff41;
+        }
+        
+        .message-content {
+            color: #c9d1d9;
+            margin-top: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .message-user .message-content {
+            color: #f778ba;
+        }
+        
+        .message-rook .message-content {
+            color: #00ff41;
+        }
+        
+        .cursor-blink {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: #00ff41;
+            animation: blink 1s infinite;
+            margin-left: 2px;
+        }
+        
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+        
+        .input-container {
+            padding: 16px 20px;
+            background: #0d1117;
+            border-top: 1px solid #1f2937;
+        }
+        
+        .input-line {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .input-prompt {
+            color: #f778ba;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        #messageInput {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #00ff41;
+            font-family: 'IBM Plex Mono', 'Courier New', monospace;
+            font-size: 14px;
+            outline: none;
+            padding: 4px 0;
+        }
+        
+        #messageInput::placeholder {
+            color: #30363d;
+        }
+        
+        .typing-indicator {
+            display: none;
+            color: #58a6ff;
+            font-size: 14px;
+        }
+        
+        .typing-indicator.show {
+            display: block;
+        }
+        
+        .typing-indicator::after {
+            content: '...';
+            animation: dots 1.5s infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        .boot-sequence {
+            color: #58a6ff;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+        
+        .boot-line {
+            margin-bottom: 4px;
+        }
+        
+        .boot-ok {
+            color: #00ff41;
+        }
+        
+        a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal-container">
+        <div class="terminal-header">
+            <div class="terminal-button btn-close"></div>
+            <div class="terminal-button btn-minimize"></div>
+            <div class="terminal-button btn-maximize"></div>
+            <span class="terminal-title">rook@investigator:~</span>
+        </div>
+        
+        <div class="messages" id="messages">
+            <div class="boot-sequence">
+                <div class="boot-line">[  OK  ] Starting ROOK Investigative System...</div>
+                <div class="boot-line">[  OK  ] Loading personality matrix...</div>
+                <div class="boot-line">[  OK  ] Connecting to knowledge bases...</div>
+                <div class="boot-line">[  OK  ] Memory system online</div>
+                <div class="boot-line" style="margin-top: 12px; color: #00ff41;">System ready. Type 'help' for available commands.</div>
+            </div>
+            
+            <div class="message message-rook">
+                <div class="message-prefix">rook@investigator:~$</div>
+                <div class="message-content">DS-471B online. Bradley made me ROOK. I investigate. I find patterns. I help tell stories.
+
+What are you working on?</div>
+            </div>
+        </div>
+        
+        <div class="input-container">
+            <div class="input-line">
+                <span class="input-prompt">you@terminal:~$</span>
+                <input 
+                    type="text" 
+                    id="messageInput" 
+                    placeholder="type your message..."
+                    autocomplete="off"
+                    autofocus
+                />
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const messagesDiv = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const API_URL = '/api/chat';
+        
+        function addMessage(role, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message message-${role}`;
+            
+            const prefix = role === 'user' ? 'you@terminal:~$' : 'rook@investigator:~$';
+            
+            messageDiv.innerHTML = `
+                <div class="message-prefix">${prefix}</div>
+                <div class="message-content">${escapeHtml(content)}</div>
+            `;
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        function showTyping() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message message-rook';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="message-prefix">rook@investigator:~$</div>
+                <div class="typing-indicator show">thinking</div>
+            `;
+            messagesDiv.appendChild(typingDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        function hideTyping() {
+            const typingDiv = document.getElementById('typing-indicator');
+            if (typingDiv) {
+                typingDiv.remove();
+            }
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+            
+            // Add user message
+            addMessage('user', message);
+            messageInput.value = '';
+            messageInput.disabled = true;
+            
+            // Show typing indicator
+            showTyping();
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        user_id: 'terminal_user'
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                hideTyping();
+                
+                // Add ROOK's response (without memory notification)
+                addMessage('rook', data.response);
+            } catch (error) {
+                hideTyping();
+                addMessage('rook', `[ERROR] ${error.message}`);
+            } finally {
+                messageInput.disabled = false;
+                messageInput.focus();
+            }
+        }
+        
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // Focus input on load
+        messageInput.focus();
+    </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/home/ubuntu/rook-core/test_adversarial.py", line 18, in <module>
+    from src.rook_safe import ROOKSafe
+  File "/home/ubuntu/rook-core/src/rook_safe.py", line 25, in <module>
+    from safety.evidence_first import EvidenceFirstSystem, Evidence
+ModuleNotFoundError: No module named 'safety'

@@ -1,0 +1,175 @@
+{
+  "investigation_id": "INV-20251112-WIRECARD",
+  "start_time": "2025-11-12T08:24:59.709072",
+  "statistics": {
+    "investigation_id": "INV-20251112-WIRECARD",
+    "total_moves": 8,
+    "move_types": {
+      "question": 1,
+      "search": 1,
+      "retrieve": 1,
+      "hypothesize": 1,
+      "verify": 1,
+      "cite": 1,
+      "reflect": 1,
+      "decide": 1
+    },
+    "duration_seconds": 0.000442,
+    "average_confidence": 0.93125,
+    "start_time": "2025-11-12T08:24:59.709072",
+    "end_time": "2025-11-12T08:24:59.709519"
+  },
+  "moves": [
+    {
+      "move_id": "INV-20251112-WIRECARD-M001",
+      "move_type": "question",
+      "timestamp": "2025-11-12T08:24:59.709088",
+      "description": "User asked: What was the Wirecard fraud?",
+      "inputs": {
+        "query": "What was the Wirecard fraud?"
+      },
+      "outputs": {
+        "investigation_initiated": true
+      },
+      "confidence": 1.0,
+      "reasoning": "Clear investigative query requiring document research",
+      "metadata": {}
+    },
+    {
+      "move_id": "INV-20251112-WIRECARD-M002",
+      "move_type": "search",
+      "timestamp": "2025-11-12T08:24:59.709094",
+      "description": "Searched knowledge base for 'Wirecard fraud'",
+      "inputs": {
+        "search_query": "Wirecard fraud",
+        "search_type": "semantic"
+      },
+      "outputs": {
+        "results_found": 5,
+        "top_result_score": 0.92
+      },
+      "confidence": 0.9,
+      "reasoning": "Knowledge base likely contains relevant Wirecard documentation",
+      "metadata": {}
+    },
+    {
+      "move_id": "INV-20251112-WIRECARD-M003",
+      "move_type": "retrieve",
+      "timestamp": "2025-11-12T08:24:59.709098",
+      "description": "Retrieved SEC Filing 10-K and FT Investigation",
+      "inputs": {
+        "document_ids": [
+          "SEC-10K-2020",
+          "FT-INV-2020"
+        ]
+      },
+      "outputs": {
+        "documents_retrieved": 2,
+        "total_pages": 250,
+        "sources": [
+          "SEC",
+          "Financial Times"
+        ]
+      },
+      "confidence": 0.95,
+      "reasoning": "Primary sources with high credibility scores",
+      "metadata": {}
+    },
+    {
+      "move_id": "INV-20251112-WIRECARD-M004",
+      "move_type": "hypothesize",
+      "timestamp": "2025-11-12T08:24:59.709101",
+      "description": "Hypothesis: Wirecard committed accounting fraud",
+      "inputs": {
+        "evidence": [
+          "\u20ac1.9B missing cash",
+          "6-year FT investigation"
+        ],
+        "pattern": "Missing funds + long investigation = fraud"
+      },
+      "outputs": {
+        "hypothesis": "Systematic accounting fraud",
+        "confidence": 0.9
+      },
+      "confidence": 0.9,
+      "reasoning": "Multiple independent sources point to fraud, not error",
+      "metadata": {}
+    },
+    {
+      "move_id": "INV-20251112-WIRECARD-M005",
+      "move_type": "verify",
+      "timestamp": "2025-11-12T08:24:59.709103",
+      "description": "Verified claim: \u20ac1.9B in cash did not exist",
+      "inputs": {
+        "claim": "\u20ac1.9B in cash did not exist",
+        "sources_to_check": [
+          "SEC-10K-2020",
+          "FT-INV-2020"
+        ]
+      },
+      "outputs": {
+        "verified": true,
+        "supporting_sources": 2,
+        "confidence": 0.95
+      },
+      "confidence": 0.95,
+      "reasoning": "Claim directly stated in SEC filing and confirmed by FT",
+      "metadata": {}
+    },
+    {
+      "move_id": "INV-20251112-WIRECARD-M006",
+      "move_type": "cite",
+      "timestamp": "2025-11-12T08:24:59.709109",
+      "description": "Cited SEC Filing 10-K as primary source",
+      "inputs": {
+        "source_id": "SEC-10K-2020"
+      },
+      "outputs": {
+        "citation": "[SEC Filing 10-K, p.15, 2020-06-25]",
+        "citation_type": "primary_source"
+      },
+      "confidence": 0.95,
+      "reasoning": "Government document with high reliability",
+      "metadata": {}
+    },
+    {
+      "move_id": "INV-20251112-WIRECARD-M007",
+      "move_type": "reflect",
+      "timestamp": "2025-11-12T08:24:59.709111",
+      "description": "Reflected on investigation progress",
+      "inputs": {
+        "moves_so_far": 6,
+        "claims_verified": 1,
+        "sources_consulted": 2
+      },
+      "outputs": {
+        "assessment": "Strong evidence for fraud hypothesis",
+        "next_steps": [
+          "Verify additional claims",
+          "Synthesize findings"
+        ]
+      },
+      "confidence": 0.9,
+      "reasoning": "Have strong primary sources, ready to synthesize",
+      "metadata": {}
+    },
+    {
+      "move_id": "INV-20251112-WIRECARD-M008",
+      "move_type": "decide",
+      "timestamp": "2025-11-12T08:24:59.709115",
+      "description": "Decision: Proceed with fraud conclusion",
+      "inputs": {
+        "hypothesis_confidence": 0.9,
+        "verified_claims": 1,
+        "source_quality": "high"
+      },
+      "outputs": {
+        "decision": "Conclude systematic accounting fraud",
+        "confidence": 0.9
+      },
+      "confidence": 0.9,
+      "reasoning": "Evidence exceeds threshold for high-confidence conclusion",
+      "metadata": {}
+    }
+  ]
+}
