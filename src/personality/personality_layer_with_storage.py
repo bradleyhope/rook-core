@@ -417,7 +417,7 @@ REMEMBER:
             self.add_to_conversation_history(user_id, "assistant", response_text)
             
             # Analyze for memory-worthy content
-            self.analyze_conversation_for_memory(user_message, response_text, user_id)
+            self.analyze_conversation_for_memory(user_message, response_text)
             
             return response_text, model_used
             
