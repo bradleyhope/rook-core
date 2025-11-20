@@ -367,3 +367,105 @@ REMEMBER:
             "conversation_history": conversation_history,
             "user_query": query
         }
+
+    def chat(self, user_message: str, conversation_history: List[Dict] = None, user_id: str = "default") -> tuple[str, str]:
+        """
+        Generate a chat response using ROOK's personality and memory.
+        
+        Args:
+            user_message: The user's message
+            conversation_history: Optional conversation history
+            user_id: Unique identifier for the user
+            
+        Returns:
+            Tuple of (response_text, model_used)
+        """
+        # Build system prompt with personality and memory context
+        system_prompt = self.build_system_prompt(user_message, user_id)
+        
+        # Use provided conversation history or get from storage
+        if conversation_history is None:
+            conversation_history = self.get_conversation_history(user_id)
+        
+        # Build messages for LLM
+        messages = [{"role": "system", "content": system_prompt}]
+        
+        # Add conversation history
+        for turn in conversation_history:
+            messages.append({
+                "role": turn.get("role", "user"),
+                "content": turn.get("content", "")
+            })
+        
+        # Add current user message
+        messages.append({"role": "user", "content": user_message})
+        
+        # Generate response using OpenAI
+        try:
+            response = self.openai_client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=messages,
+                temperature=0.7,
+                max_tokens=1000
+            )
+            
+            response_text = response.choices[0].message.content
+            model_used = response.model
+            
+            # Store conversation in history
+            self.add_to_conversation_history(user_id, "user", user_message)
+            self.add_to_conversation_history(user_id, "assistant", response_text)
+            
+            # Analyze for memory-worthy content
+            self.analyze_conversation_for_memory(user_message, response_text, user_id)
+            
+            return response_text, model_used
+            
+        except Exception as e:
+            print(f"Error generating response: {e}")
+            return f"I apologize, but I encountered an error: {str(e)}", "error"
+    
+    def query_memory(self, query: str, top_k: int = 5, namespace: str = None) -> List[Dict]:
+        """
+        Query ROOK's memory systems directly.
+        
+        Args:
+            query: The search query
+            top_k: Number of results to return
+            namespace: Optional namespace to search in
+            
+        Returns:
+            List of memory results
+        """
+        try:
+            # Get embedding for query
+            embedding_response = self.openai_client.embeddings.create(
+                model="text-embedding-3-large",
+                input=query,
+                dimensions=3072
+            )
+            query_embedding = embedding_response.data[0].embedding
+            
+            # Query Pinecone
+            results = self.personality_index.query(
+                vector=query_embedding,
+                top_k=top_k,
+                include_metadata=True,
+                namespace=namespace
+            )
+            
+            # Format results
+            memories = []
+            for match in results.matches:
+                memories.append({
+                    "id": match.id,
+                    "score": match.score,
+                    "text": match.metadata.get("text", ""),
+                    "metadata": match.metadata
+                })
+            
+            return memories
+            
+        except Exception as e:
+            print(f"Error querying memory: {e}")
+            return []

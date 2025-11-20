@@ -1,0 +1,57 @@
+services:
+  # ROOK Engine - Core Intelligence Service (Internal)
+  - type: web
+    name: rook-engine
+    env: python
+    region: oregon
+    plan: starter
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
+    startCommand: "python api/rook_engine.py"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: PINECONE_API_KEY
+        sync: false
+      - key: PINECONE_ENVIRONMENT
+        value: us-east-1
+      - key: NEWSAPI_KEY
+        sync: false
+      - key: ENGINE_API_KEY
+        generateValue: true
+    # Health check
+    healthCheckPath: /health
+    
+  # ROOK Web - Public API Gateway
+  - type: web
+    name: rook-web
+    env: python
+    region: oregon
+    plan: starter
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
+    startCommand: "python api/rook_web.py"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: ROOK_ENGINE_URL
+        fromService:
+          type: web
+          name: rook-engine
+          property: host
+      - key: ENGINE_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: rook-database
+          property: connectionString
+    # Health check
+    healthCheckPath: /health
+
+databases:
+  - name: rook-database
+    databaseName: rook
+    user: rook
+    region: oregon
+    plan: starter
+    postgresMajorVersion: 18
